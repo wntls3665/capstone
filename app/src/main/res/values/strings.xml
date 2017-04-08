@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Final</string>
+    <string name="tab1">평가하기</string>
+    <string name="tab2">순위</string>
+    <string name="tab3">내 사진</string>
+    <string name="facebook_app_id">446729485659412</string>
+</resources>
