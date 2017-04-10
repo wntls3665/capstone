@@ -34,6 +34,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private CallbackManager mCallbackManager;
+    //GoogleSignInResult result;
     private AccessToken mToken = null;
     public static String selected_region = "";
     ArrayList<Vertex> arVertex;   // for save drawing
@@ -47,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mCallbackManager = CallbackManager.Factory.create();
         mToken = AccessToken.getCurrentAccessToken();
-
+/*        GoogleSignInAccount acct=result.getSignInAccount();
+        acct.getIdToken();*/
 
         if (mToken == null) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);

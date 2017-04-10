@@ -35,4 +35,10 @@ dependencies {
     testCompile 'junit:junit:4.12'
     //for facebook login
     compile 'com.facebook.android:facebook-android-sdk:4.+'
+    //for google login
+    compile 'com.google.android.gms:play-services-auth:9.8.0'
 }
+
+
+apply plugin: 'com.google.gms.google-services'
+

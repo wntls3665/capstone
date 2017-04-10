@@ -4,4 +4,5 @@
     <string name="tab2">순위</string>
     <string name="tab3">내 사진</string>
     <string name="facebook_app_id">446729485659412</string>
+    <string name="server_client_id">YOUR_SERVER_CLIENT_ID</string>
 </resources>
