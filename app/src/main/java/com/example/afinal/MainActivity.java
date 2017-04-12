@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,12 +35,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private CallbackManager mCallbackManager;
-    //GoogleSignInResult result;
     private AccessToken mToken = null;
     public static String selected_region = "";
+
     ArrayList<Vertex> arVertex;   // for save drawing
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mCallbackManager = CallbackManager.Factory.create();
         mToken = AccessToken.getCurrentAccessToken();
-/*        GoogleSignInAccount acct=result.getSignInAccount();
-        acct.getIdToken();*/
 
         if (mToken == null) {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -201,9 +198,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
     //gridview setting ( ranking)
     public class MyGridAdapter extends BaseAdapter {
         Context context;
@@ -241,8 +235,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int height=displayMetrics.heightPixels;
+            int width=displayMetrics.widthPixels;
+
+
             ImageView imageview = new ImageView(context);
-            imageview.setLayoutParams(new GridView.LayoutParams(300, 400));
+            imageview.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, height/4));
             imageview.setScaleType(ImageView.ScaleType.FIT_CENTER);
             imageview.setPadding(10, 10, 10, 10);
 
@@ -312,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
             imageview.setImageResource(imageID[position]);
 
             final int pos = position;
+
             imageview.setOnClickListener(new View.OnClickListener() {
 
                 public void onClick(View v) {

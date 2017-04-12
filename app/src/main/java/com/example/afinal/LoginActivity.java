@@ -1,11 +1,12 @@
 package com.example.afinal;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -18,35 +19,46 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 
 import org.json.JSONObject;
 
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends FragmentActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private CallbackManager mCallbackManager;
     private AccessToken mToken = null;
-    private GoogleApiClient mGoogleApiClient;
+   private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "LoginActivity";
+
+    //OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+    //이새끼가 오류주범
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this /*FragmentActivity*/, this /*OnconnectionFailedListener */).
+                addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
+
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+
+        if(opr.isDone()) {
+            finish();
+        }
+
         setContentView(R.layout.login);
         mCallbackManager = CallbackManager.Factory.create();
         mToken = AccessToken.getCurrentAccessToken();
-/*
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
 
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this *//*FragmentActivity*//*, this *//*OnconnectionFailedListener *//*).
-                addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
 
         SignInButton signInButton = (SignInButton) findViewById(R.id.g_login_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
@@ -57,11 +69,10 @@ public class LoginActivity extends Activity {
                     case R.id.g_login_button:
                         signIn();
                         break;
-
                 }
-
             }
-        });*/
+
+        });
 
 
         LoginButton loginButton = (LoginButton) findViewById(R.id.fb_login_button);
@@ -95,15 +106,10 @@ public class LoginActivity extends Activity {
             parameters.putString("fields", "id,name,email");
             request.setParameters(parameters);
             request.executeAsync();
+            finish();
         }
 
     }
-/*
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
-    }*/
 
     GraphRequest.GraphJSONObjectCallback jsonObjectCallback = new GraphRequest.GraphJSONObjectCallback() {
         @Override
@@ -114,6 +120,31 @@ public class LoginActivity extends Activity {
         }
     };
 
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode,resultCode,data);
+
+        if(requestCode==RC_SIGN_IN)
+        {
+            GoogleSignInResult result=Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            int statusCode=result.getStatus().getStatusCode();
+            if(result.isSuccess()){
+                GoogleSignInAccount acct = result.getSignInAccount();
+                assert acct!=null;
+                String mEmail=acct.getEmail();
+                String mUserId = acct.getId();
+                handleSignInResult(result);
+                finish();
+            }
+
+        }
+
+
+
+     }
 
 
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -143,8 +174,10 @@ public class LoginActivity extends Activity {
         if (signedIn) {
 
         }
-    }
 
+
+    }
+/*
     public void onStart() {
         super.onStart();
 
@@ -153,6 +186,6 @@ public class LoginActivity extends Activity {
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
         }
-    }
+    }*/
 }
 
